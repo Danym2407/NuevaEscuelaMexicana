@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import Header from './components/Header'
+import RoleSelectionPage from './pages/RoleSelectionPage'
 import LoginPage from './pages/LoginPage'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import TeacherDashboard from './pages/teacher/TeacherDashboard'
@@ -26,7 +28,12 @@ function ProtectedRoute({ children, requiredRole }) {
     return <Navigate to="/login" replace />
   }
 
-  return children
+  return (
+    <div>
+      <Header />
+      {children}
+    </div>
+  )
 }
 
 function AppRoutes() {
@@ -42,6 +49,9 @@ function AppRoutes() {
 
   return (
     <Routes>
+      {/* Home route - Role Selection */}
+      <Route path="/" element={<RoleSelectionPage />} />
+
       {/* Public routes */}
       <Route path="/login" element={<LoginPage />} />
 
@@ -85,7 +95,6 @@ function AppRoutes() {
       />
 
       {/* Default redirect */}
-      <Route path="/" element={<Navigate to={isAuthenticated ? "/teacher/dashboard" : "/login"} replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
