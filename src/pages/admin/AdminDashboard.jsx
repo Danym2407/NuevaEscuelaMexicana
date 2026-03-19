@@ -1,100 +1,99 @@
+/**
+ * AdminDashboard - Refactored with Reusable Templates & i18n
+ * Code in English, User-facing text in Spanish
+ */
+
+import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { useNavigate } from 'react-router-dom'
-import { LogOut, Building2, Users, BarChart3 } from 'lucide-react'
+import { Users, BarChart3, Settings, Activity } from 'lucide-react'
+import { DashboardLayout, StatsGrid, EmptyState } from '../../components/templates'
+import { es } from '../../locales/es'
 
 export default function AdminDashboard() {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+  const { user } = useAuth()
+  const [activeTab, setActiveTab] = useState('overview')
 
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
+  // Translation shortcuts
+  const t = es.admin
+
+  // Tab definitions
+  const dashboardTabs = [
+    { id: 'overview', label: t.tabs.overview, icon: Activity },
+    { id: 'users', label: t.tabs.users, icon: Users },
+    { id: 'reports', label: t.tabs.reports, icon: BarChart3 },
+    { id: 'settings', label: t.tabs.settings, icon: Settings },
+  ]
+
+  // Statistics
+  const stats = [
+    { id: 'totalUsers', label: t.stats.totalUsers, value: 0 },
+    { id: 'activeTeachers', label: t.stats.activeTeachers, value: 0 },
+    { id: 'activeStudents', label: t.stats.activeStudents, value: 0 },
+    { id: 'totalChallenges', label: t.stats.totalChallenges, value: 0 },
+  ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
-            <p className="text-sm text-gray-600">Welcome, {user?.fullName}</p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-            Logout
-          </button>
+    <DashboardLayout
+      title={t.dashboard.pageTitle}
+      subtitle={`${es.common.welcome}, ${user?.first_name}`}
+      tabs={dashboardTabs}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+    >
+      {/* Overview Tab */}
+      {activeTab === 'overview' && (
+        <div className="space-y-6">
+          <StatsGrid stats={stats} />
+          <EmptyState
+            title="Resumen del Sistema"
+            message="Aquí aparecerá el resumen general de la plataforma"
+            icon={Activity}
+          />
         </div>
-      </header>
+      )}
 
-      {/* Main content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Institution Management Card */}
-          <div className="bg-white rounded-lg shadow p-6 border border-gray-200 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-gray-100 rounded-lg">
-                <Building2 className="w-6 h-6 text-gray-700" />
-              </div>
-              <h2 className="text-lg font-semibold text-gray-900">Institutions</h2>
-            </div>
-            <p className="text-gray-600 text-sm mb-4">Manage schools and educational institutions</p>
-            <button className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium">
-              Manage Institutions
+      {/* Users Tab */}
+      {activeTab === 'users' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">{t.tabs.users}</h2>
+            <button className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium">
+              Crear Usuario
             </button>
           </div>
+          <EmptyState
+            title={t.tabs.users}
+            message="Gestiona los usuarios del sistema"
+            icon={Users}
+            action={{ label: 'Crear Usuario' }}
+          />
+        </div>
+      )}
 
-          {/* User Management Card */}
-          <div className="bg-white rounded-lg shadow p-6 border border-gray-200 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-gray-100 rounded-lg">
-                <Users className="w-6 h-6 text-gray-700" />
-              </div>
-              <h2 className="text-lg font-semibold text-gray-900">Users</h2>
-            </div>
-            <p className="text-gray-600 text-sm mb-4">Manage teachers and administrators</p>
-            <button className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium">
-              Manage Users
-            </button>
+      {/* Reports Tab */}
+      {activeTab === 'reports' && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">{t.tabs.reports}</h2>
           </div>
+          <EmptyState
+            title={t.tabs.reports}
+            message="Reportes y estadísticas avanzadas"
+            icon={BarChart3}
+          />
+        </div>
+      )}
 
-          {/* Statistics Card */}
-          <div className="bg-white rounded-lg shadow p-6 border border-gray-200 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-gray-100 rounded-lg">
-                <BarChart3 className="w-6 h-6 text-gray-700" />
-              </div>
-              <h2 className="text-lg font-semibold text-gray-900">Statistics</h2>
-            </div>
-            <p className="text-gray-600 text-sm mb-4">View system-wide metrics and analytics</p>
-            <button className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium">
-              View Statistics
-            </button>
+      {/* Settings Tab */}
+      {activeTab === 'settings' && (
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900">{t.tabs.settings}</h2>
+          <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+            <p className="text-gray-600">Configuración del sistema en desarrollo...</p>
           </div>
         </div>
-
-        {/* Upcoming sections */}
-        <div className="mt-12 bg-white rounded-lg shadow p-6 border border-gray-300">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Features Coming Soon</h2>
-          <ul className="space-y-3 text-gray-600">
-            <li className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
-              AI-powered pedagogical analysis dashboard
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
-              Automated AI-assisted administrative reports
-            </li>
-            <li className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
-              AI consumption metrics and usage tracking
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
+      )}
+    </DashboardLayout>
   )
 }
+

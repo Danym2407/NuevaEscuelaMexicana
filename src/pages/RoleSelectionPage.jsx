@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { Users, BookOpen, Settings } from 'lucide-react'
+import Header from '../components/Header'
 
 export default function RoleSelectionPage() {
   const navigate = useNavigate()
@@ -37,19 +38,19 @@ export default function RoleSelectionPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 safe-top safe-bottom">
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <div className="flex-1 bg-gradient-to-b from-gray-50 to-gray-100 flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 safe-top safe-bottom">
       {/* Header */}
-      <div className="text-center mb-12 max-w-2xl mx-auto">
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-gray-800">
-            <span className="text-xl font-bold text-gray-50">NEM</span>
-          </div>
-          <h1 className="text-4xl font-bold text-gray-900">Nueva Escuela Mexicana</h1>
-        </div>
-        <div className="inline-block px-4 py-2 bg-gray-300 text-gray-800 text-sm font-semibold rounded-full mb-4">
+      <div className="inline-block px-4 py-2 bg-gray-300 text-gray-800 text-sm font-semibold rounded-full mb-4">
           ESCUELA PRIMARIA GENERAL
         </div>
-        <h2 className="text-3xl font-bold text-gray-800 mb-4">Fase 4 - Retos de Aprendizaje</h2>
+      <div className="text-center mb-12 max-w-2xl mx-auto">
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <h2 className="text-3xl font-bold text-gray-800">Nueva Escuela Mexicana</h2>
+        </div>
+        
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">Fase 4 - Retos de Aprendizaje</h1>
         <p className="text-gray-600 text-lg">
           Selecciona tu perfil para continuar con el diseño o resolución de retos educativos.
         </p>
@@ -91,6 +92,7 @@ export default function RoleSelectionPage() {
       {/* Footer */}
       <div className="text-center text-gray-500 text-sm mt-8">
         <p>Nueva Escuela Mexicana © 2026</p>
+      </div>
       </div>
     </div>
   )
