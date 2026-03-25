@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, Subject, Group, Student
 import jwt
 from django.conf import settings
 from datetime import datetime, timedelta
@@ -67,3 +67,64 @@ def generate_jwt_token(user):
     }
     token = jwt.encode(payload, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
     return token
+
+
+# Serializers para Subject, Group y Student
+class SubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subject
+        fields = ('id', 'name', 'description', 'created_at')
+        read_only_fields = ('id', 'created_at')
+
+
+class StudentSerializer(serializers.ModelSerializer):
+    user_email = serializers.CharField(source='user.email', read_only=True)
+    user_name = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Student
+        fields = ('id', 'user', 'user_email', 'user_name', 'group', 'enrollment_date')
+        read_only_fields = ('id', 'enrollment_date')
+    
+    def get_user_name(self, obj):
+        return f"{obj.user.first_name} {obj.user.last_name}".strip()
+
+
+class GroupDetailSerializer(serializers.ModelSerializer):
+    subject_name = serializers.CharField(source='subject.name', read_only=True)
+    teacher_name = serializers.SerializerMethodField()
+    students = StudentSerializer(many=True, read_only=True)
+    student_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Group
+        fields = ('id', 'teacher', 'teacher_name', 'subject', 'subject_name', 'name', 'description', 'students', 'student_count', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'created_at', 'updated_at')
+    
+    def get_teacher_name(self, obj):
+        return f"{obj.teacher.first_name} {obj.teacher.last_name}".strip()
+    
+    def get_student_count(self, obj):
+        return obj.students.count()
+
+
+class GroupSerializer(serializers.ModelSerializer):
+    subject_name = serializers.CharField(source='subject.name', read_only=True)
+    teacher_name = serializers.SerializerMethodField()
+    student_count = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Group
+        fields = ('id', 'teacher', 'teacher_name', 'subject', 'subject_name', 'name', 'description', 'student_count', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'created_at', 'updated_at', 'teacher')
+    
+    def get_teacher_name(self, obj):
+        return f"{obj.teacher.first_name} {obj.teacher.last_name}".strip()
+    
+    def get_student_count(self, obj):
+        return obj.students.count()
+    
+    def create(self, validated_data):
+        """El profesor se obtiene del request"""
+        validated_data['teacher'] = self.context['request'].user
+        return super().create(validated_data)
